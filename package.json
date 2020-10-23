@@ -4,15 +4,13 @@
   "description": "OS.js GUI",
   "module": "dist/esm.js",
   "main": "dist/main.js",
-  "style": "dist/main.css",
   "scripts": {
-    "test": "npm run eslint && npm run stylelint",
+    "test": "npm run eslint",
     "eslint": "eslint index.js 'src/**/*.js'",
     "build": "webpack",
     "build:esm": "rollup -c",
     "watch": "webpack --watch",
     "watch:esm": "rollup -c --watch",
-    "stylelint": "stylelint index.scss src/**/*.scss",
     "prepublishOnly": "npm run test && rm ./dist/* && NODE_ENV=production npm run build && npm run build:esm"
   },
   "repository": {
@@ -27,15 +25,13 @@
     "dist/esm.js.map",
     "dist/main.js",
     "dist/main.js.map",
-    "dist/main.css",
-    "dist/main.css.map",
     "CHANGELOG.md",
     "README.md",
     "LICENSE"
   ],
   "dependencies": {
-    "hyperapp": "^1.2.10",
-    "hyperapp-nestable": "^1.0.0"
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
   },
   "devDependencies": {
     "@osjs/dev-meta": "^1.0.2",
