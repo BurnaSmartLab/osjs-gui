@@ -34,6 +34,7 @@
     "react-dom": "^17.0.1"
   },
   "devDependencies": {
+    "@babel/preset-react": "^7.12.1",
     "@osjs/dev-meta": "^1.0.2",
     "rollup": "^1.31.0",
     "rollup-plugin-babel": "^4.3.3",
@@ -63,6 +64,7 @@
   },
   "babel": {
     "presets": [
+      "@babel/preset-react",
       [
         "@babel/preset-env",
         {
