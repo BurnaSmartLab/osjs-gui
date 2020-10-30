@@ -28,46 +28,56 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import nestable from 'hyperapp-nestable';
+import React from 'react';
 
-const headers = ({labels, onchange, oncontextmenu}, state, actions) => (labels || [])
-  .map((label, index) => h('div', {
-    class: state.selectedIndex === index ? 'osjs__active' : '',
-    oncontextmenu: ev => {
-      (oncontextmenu || function() {})(ev, index, label);
-    },
-    onclick: ev => {
-      actions.setSelectedIndex(index);
-      (onchange || function() {})(ev, index, label);
-    }
-  }, h('span', {}, label)));
+const defaultHandler = () => {};
 
-const panes = (state, children) => children
-  .map((child, index) => h('div', {
-    class: state.selectedIndex === index ? 'osjs__active' : ''
-  }, child));
+const TabsHeaders = (
+  labels = [],
+  onChange = defaultHandler,
+  onContextMenu = defaultHandler,
+  selectedIndex,
+  setSelectedIndex
+) =>
+  labels.map((label, index) => (
+    <div
+      className={state.selectedIndex === index ? 'osjs__active' : ''}
+      onContextMenu={ev => onContextMenu(ev, index, label)}
+      onClick={ev => (setSelectedIndex(index), onChange(ev, index, label))}>
+      <span>{label}</span>
+    </div>
+  ));
 
-const view = nestable({
-  selectedIndex: 0
-}, {
-  init: props => ({
-    selectedIndex: props.selectedIndex || 0
-  }),
-  setSelectedIndex: selectedIndex => state => ({selectedIndex})
-}, (state, actions) => (props, children) => h('div', {
-  class: 'osjs-gui-tabs-wrapper'
-}, [
-  h('div', {class: 'osjs-gui-tabs-header'}, headers(props, state, actions)),
-  h('div', {class: 'osjs-gui-tabs-panes'}, panes(state, children))
-]), 'div');
+const TabsPanes = ({ selectedIndex, children }) =>
+  React.Children.map(children, (child, index) => (
+    <div className={selectedIndex === index ? 'osjs__active' : ''}>{child}</div>
+  ));
 
 /**
  * A tab container
  * @param {Object} props Properties
  * @param {String[]} props.labels Labels
- * @param {h[]} children Tabs
  */
-export const Tabs = (props, children) => h(view, Object.assign({
-  class: 'osjs-gui osjs-gui-tabs ' + (props.class || '')
-}, props), children);
+export const Tabs = ({ children, ...props }) => {
+  const [selectedIndex, setSelectedIndex] = React.useState(
+    props.selectedIndex || 0
+  );
+
+  return (
+    <div className={'osjs-gui osjs-gui-tabs ' + (props.class || '')}>
+      <div className="osjs-gui-tabs-wrapper">
+        <div className="osjs-gui-tabs-header">
+          {/* {headers(props, state, actions)} */}
+          <TabsHeaders
+            {...props}
+            selectedIndex={selectedIndex}
+            setSelectedIndex={setSelectedIndex}
+          />
+        </div>
+        <div className="osjs-gui-tabs-panes">
+          <TabsPanes selectedIndex={selectedIndex}>{children}</TabsPanes>
+        </div>
+      </div>
+    </div>
+  );
+};

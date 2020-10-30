@@ -53,4 +53,3 @@ export * from './src/components/RangeField';
 export * from './src/components/Icon';
 export * from './src/components/Expander';
 export * from './src/components/Label';
-export * from './src/provider';

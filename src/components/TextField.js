@@ -28,7 +28,6 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
 import {createField} from '../element';
 
 /**
@@ -37,13 +36,12 @@ import {createField} from '../element';
  * @param {string} [props.value] Value
  * @param {string} [props.type=text] Type
  * @param {BoxProperties} [props.box] Box Properties
- * @param {h[]} children Children
  */
-export const TextField = (props = {}, children = []) =>
+export const TextField = ({children, ...props}) =>
   createField('text-field', props, {
     autocomplete: 'off',
     autocorrect: 'off',
     autocapitalize: 'off',
     spellcheck: 'false',
     type: 'text'
-  }, (fieldProps) => h('input', fieldProps));
+  }, (fieldProps) => <input {...fieldProps} />);

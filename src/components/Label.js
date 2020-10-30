@@ -28,7 +28,6 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
 import {Element} from './Element';
 
 /**
@@ -38,7 +37,6 @@ import {Element} from './Element';
  * @param {string} [props.placement] Placement
  * @param {string} [props.for] The "for" attribute
  * @param {BoxProperties} [props.box] Box Properties
- * @param {h[]} children Children
  */
 export const Label = (props = {}, children = []) => {
   const placement = props.placement || 'top';

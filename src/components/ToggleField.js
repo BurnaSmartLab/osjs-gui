@@ -28,8 +28,7 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import {createField} from '../element';
+import { createField } from '../element';
 
 /*
  * Parses option value
@@ -48,25 +47,28 @@ const parseValue = value => {
  * @param {string} [props.checked] Value
  * @param {string} [props.type=checkbox] Type
  * @param {BoxProperties} [props.box] Box Properties
- * @param {h[]} children Children
  */
-export const ToggleField = (props = {}, children = []) =>
-  createField('toggle-field', props, {
-    type: 'checkbox',
-    checked: false
-  }, (fieldProps) => h('label', {
-
-  }, [
-    h('input', fieldProps),
-    h('span', {
-      class: 'osjs-toggle-input'
-    }),
-    h('span', {
-      class: 'osjs-toggle-label'
-    }, [
-      props.label || '',
-      ...children
-    ])
-  ]), ev => [props.type === 'radio'
-    ? parseValue(ev.target.value)
-    : !!ev.target.checked]);
+export const ToggleField = ({ children, ...props }) =>
+  createField(
+    'toggle-field',
+    props,
+    {
+      type: 'checkbox',
+      checked: false,
+    },
+    fieldProps => (
+      <label>
+        <input {...fieldProps} />
+        <span className="osjs-toggle-input" />
+        <span className="osjs-toggle-label">
+          {props.label || ''}
+          {children}
+        </span>
+      </label>
+    ),
+    ev => [
+      props.type === 'radio'
+        ? parseValue(ev.target.value)
+        : !!ev.target.checked,
+    ]
+  );

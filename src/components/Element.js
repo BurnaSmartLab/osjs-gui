@@ -28,11 +28,9 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-
 /**
  * Elemet Box definition
- * @property {string} [class] Container class name
+ * @property {string} [className] Container class name
  * @property {number} [grow] Flexbox grow value
  * @property {number} [shrink] Flexbox shrink value
  * @property {number|string} [basis] Flexbox basis value
@@ -40,49 +38,39 @@ import {h} from 'hyperapp';
  * @property {string} [justify] Flexbox justifyContent value
  * @property {number|string} [padding] Margin
  * @property {number|string} [margin] Margin
- * @property {string} [key] Hyperapp element key
- * @property {Function} [oncreate] Hyperapp oncreate function
- * @property {Function} [onupdate] Hyperapp onupdate function
- * @property {Function} [ondestroy] Hyperapp ondestroy function
+ * @property {string} [key] element key
  * @typedef BoxProperties
  */
 
-const unitValue = (value, unset) => typeof value === 'number'
-  ? `${value}px`
-  : (value === false ? unset : value);
+const unitValue = (value, unset) =>
+  typeof value === 'number' ? `${value}px` : value === false ? unset : value;
 
 const boxPropNames = {
-  grow: value => ({flexGrow: value}),
-  shrink: value => ({flexShrink: value}),
-  basis: value => ({flexBasis: unitValue(value, 'auto')}),
-  align: value => ({alignItems: value}),
-  justify: value => ({justifyContent: value}),
-  padding: value => ({margin: unitValue(value, '0')}),
-  margin: value => ({margin: unitValue(value, '0')})
+  grow: value => ({ flexGrow: value }),
+  shrink: value => ({ flexShrink: value }),
+  basis: value => ({ flexBasis: unitValue(value, 'auto') }),
+  align: value => ({ alignItems: value }),
+  justify: value => ({ justifyContent: value }),
+  padding: value => ({ margin: unitValue(value, '0') }),
+  margin: value => ({ margin: unitValue(value, '0') }),
 };
 
 /**
  * A generic OS.js GUI container
  * @param {Object} props Properties
- * @param {h[]} children Children
  */
-export const Element = (props, children = []) => {
-  const givenClassNames = props.class instanceof Array
-    ? props.class
-    : [props.class];
+export const Element = ({children, ...props}) => {
+  const givenClassNames =
+    props.className instanceof Array ? props.className : [props.className];
 
-  const classNames = [
-    'osjs-gui',
-    ...givenClassNames
-  ];
+  const classNames = ['osjs-gui', ...givenClassNames];
 
   if (props.orientation) {
     classNames.push('osjs-gui-' + props.orientation);
   }
 
-  const defaultStyle = typeof props.style === 'string'
-    ? {}
-    : Object.assign({}, props.style || {});
+  const defaultStyle =
+    typeof props.style === 'string' ? {} : Object.assign({}, props.style || {});
 
   const style = Object.keys(props).reduce((result, prop) => {
     const value = boxPropNames[prop]
@@ -92,10 +80,11 @@ export const Element = (props, children = []) => {
     return Object.assign({}, result, value);
   }, defaultStyle);
 
-  return h('div', {
-    oncreate: props.oncreate,
-    ondestroy: props.ondestroy,
-    class: classNames.filter(s => !!s).join(' '),
-    style
-  }, children);
+  return (
+    <div
+      className={classNames.filter(s => !!s).join(' ')}
+      style={style}>
+      {children}
+    </div>
+  );
 };

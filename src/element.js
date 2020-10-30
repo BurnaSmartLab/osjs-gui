@@ -27,9 +27,8 @@
  * @author  Anders Evenrud <andersevenrud@gmail.com>
  * @licence Simplified BSD License
  */
-import {h} from 'hyperapp';
-import {filteredProps} from './utils';
-import {Element} from './components/Element';
+import { filteredProps } from './utils';
+import { Element } from './components/Element';
 
 /**
  * Creates a new field Element wrapper
@@ -39,27 +38,32 @@ import {Element} from './components/Element';
  * @param {Function} cb Callback to get value => (event)
  */
 export const createField = (name, props, defaultProps, cb, cbInput) => {
-  const oninput = props.oninput || function() {};
-  const onchange = props.onchange || function() {};
-  const onkeydown = props.onkeydown || function() {};
+  const onInput = props.onInput || function () {};
+  const onChange = props.onChange || function () {};
+  const onKeyDown = props.onKeyDown || function () {};
 
   const getValue = cbInput || (ev => [ev.target.value]);
   const fieldProps = Object.assign(
     {
-      oninput: ev => oninput(ev, ...getValue(ev)),
-      onchange: ev => onchange(ev, ...getValue(ev)),
-      onkeydown: ev => {
+      onInput: ev => onInput(ev, ...getValue(ev)),
+      onChange: ev => onChange(ev, ...getValue(ev)),
+      onKeyDown: ev => {
         if (ev.keyCode === 13 && props.onenter) {
           props.onenter(ev, ...getValue(ev));
         }
-        onkeydown(ev);
-      }
+        onKeyDown(ev);
+      },
     },
     defaultProps,
-    filteredProps(props, ['choices', 'label', 'box', 'oninput', 'onchange'])
+    filteredProps(props, ['choices', 'label', 'box', 'onInput', 'onChange'])
   );
 
-  return h(Element, Object.assign({}, props.box || {}, {
-    class: 'osjs-gui-field osjs-gui-' + name
-  }), cb(fieldProps));
+  return (
+    <Element
+      {...Object.assign({}, props.box || {}, {
+        className: 'osjs-gui-field osjs-gui-' + name,
+      })}>
+      {cb(fieldProps)}
+    </Element>
+  );
 };

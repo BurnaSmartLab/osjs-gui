@@ -28,91 +28,81 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import {doubleTap} from '../utils';
-import {Element} from './Element';
-import {Icon} from './Icon';
+import React from 'react';
+import { doubleTap } from '../utils';
+import { Element } from './Element';
+import { Icon } from './Icon';
 
 const tapper = doubleTap();
 
-export const IconViewEntry = (entry, index, props) => () => {
-  const icon = entry.icon || {name: 'application-x-executable'};
+export const IconViewEntry = ({ entry, index, ...props }) => {
+  const elementRef = React.useRef();
+
+  const icon = entry.icon || { name: 'application-x-executable' };
   const selected = props.selectedIndex === index;
 
-  return h('div', {
-    class: 'osjs-gui-icon-view-entry' + (selected ? ' osjs__active' : ''),
-    ontouchstart: (ev) => tapper(ev, () => props.onactivate({data: entry.data, index, ev})),
-    ondblclick: (ev) => props.onactivate({data: entry.data, index, ev}),
-    onclick: (ev) => props.onselect({data: entry.data, index, ev}),
-    oncontextmenu: (ev) => props.oncontextmenu({data: entry.data, index, ev}),
-    oncreate: (el) => props.oncreate({data: entry.data, index, el})
-  }, [
-    h('div', {class: 'osjs__container'}, [
-      h('div', {class: 'osjs__image'}, [
-        h(Icon, icon)
-      ]),
-      h('div', {class: 'osjs__label'}, [
-        h('span', {}, entry.label)
-      ])
-    ])
-  ]);
+  React.useEffect(() => {
+    props.onCreate({ data: entry.data, index, el: elementRef.current });
+  }, []);
+
+  return (
+    <div
+      ref={elementRef}
+      className={'osjs-gui-icon-view-entry' + (selected ? ' osjs__active' : '')}
+      onTouchStart={ev =>
+        tapper(ev, () => props.onactivate({ data: entry.data, index, ev }))
+      }
+      onDoubleClick={ev => props.onactivate({ data: entry.data, index, ev })}
+      onClick={ev => props.onselect({ data: entry.data, index, ev })}
+      onContextMenu={ev =>
+        props.oncontextmenu({ data: entry.data, index, ev })
+      }>
+      <div className="osjs__container">
+        <div className="osjs__image">
+          <Icon {...icon} />
+        </div>
+        <div className="osjs__label">
+          <span>{entry.label}</span>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-export const IconView = (props) => {
-  const inner = h('div', {
-    class: 'osjs-gui-icon-view-wrapper',
-    oncreate: el => (el.scrollTop = props.scrollTop),
-    onupdate: el => {
-      if (props.selectedIndex < 0) {
-        el.scrollTop = props.scrollTop;
-      }
+const defaultHandler = () => {};
+
+const defaultProps = {
+  selectedIndex: -1,
+  scrollTop: 0,
+  entries: [],
+  onSelect: defaultHandler,
+  onActivate: defaultHandler,
+  onContextMenu: defaultHandler,
+  onCreate: defaultHandler,
+};
+
+export const IconView = props => {
+  const elementRef = React.useRef();
+
+  const newProps = { ...defaultProps, ...props };
+
+  React.useEffect(() => {
+    elementRef.current.scrollTop = newProps.scrollTop;
+  }, []);
+
+  React.useEffect(() => {
+    if (newProps.selectedIndex < 0) {
+      elementRef.current.scrollTop = newProps.scrollTop;
     }
-  }, props.entries.map((entry, index) => {
-    return h(IconViewEntry(entry, index, props));
-  }));
+  });
 
-  return h(Element, Object.assign({
-    class: 'osjs-gui-icon-view'
-  }, props.box || {}), inner);
+  return (
+    <Element className="osjs-gui-icon-view" {...newProps.box}>
+      <div ref={elementRef} className="osjs-gui-icon-view-wrapper">
+        {newProps.entries.map((entry, index) => (
+          <IconViewEntry entry={entry} index={index} {...newProps} />
+        ))}
+      </div>
+    </Element>
+  );
 };
-
-export const iconView = ({
-  component: (state, actions) => {
-    const newProps = Object.assign({
-      entries: [],
-      onselect: ({data, index, ev}) => {
-        actions.select({data, index, ev});
-        actions.setSelectedIndex(index);
-      },
-      onactivate: ({data, index, ev}) => {
-        actions.activate({data, index, ev});
-        actions.setSelectedIndex(-1);
-      },
-      oncontextmenu: ({data, index, ev}) => {
-        actions.select({data, index, ev});
-        actions.contextmenu({data, index, ev});
-        actions.setSelectedIndex(index);
-      },
-      oncreate: (args) => {
-        actions.created(args);
-      }
-    }, state);
-
-    return (props = {}) => IconView(Object.assign(newProps, props));
-  },
-
-  state: state => Object.assign({
-    selectedIndex: -1,
-    scrollTop: 0
-  }, state),
-
-  actions: actions => Object.assign({
-    select: () => () => ({}),
-    activate: () => () => ({}),
-    contextmenu: () => () => ({}),
-    created: () => () => ({}),
-    setEntries: entries => () => ({entries}),
-    setScrollTop: scrollTop => state => ({scrollTop}),
-    setSelectedIndex: selectedIndex => state => ({selectedIndex}),
-  }, actions || {})
-});

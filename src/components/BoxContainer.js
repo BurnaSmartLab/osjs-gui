@@ -28,16 +28,13 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import {Element} from './Element';
+import { Element } from './Element';
 
 /**
  * A flexbox container
  * @param {BoxProperties} props Properties
  * @param {string} [props.orientation='vertical'] Box orientation
- * @param {h[]} children Children
  */
-export const BoxContainer = (props, children) =>
-  h(Element, Object.assign({}, props, {
-    class: ['osjs-gui-box-container', props.class]
-  }), children);
+export const BoxContainer = props => (
+  <Element {...props} className={['osjs-gui-box-container', props.className]} />
+);

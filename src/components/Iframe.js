@@ -28,22 +28,17 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import {filteredProps} from '../utils';
-import {Element} from './Element';
+import { filteredProps } from '../utils';
+import { Element } from './Element';
 
 /**
  * A iframe
  * @param {Object} props Properties
  * @param {BoxProperties} [props.box] Box Properties
- * @param {h[]} children Children
  */
-export const Iframe = (props, children = []) =>
-  h(Element, Object.assign({}, props.box || {}, {
-    class: ['osjs-gui-iframe', props.class]
-  }), [
-    h('iframe', Object.assign({
-      frameborder: 0
-    }, filteredProps(props, ['box']))),
-    ...children
-  ]);
+export const Iframe = ({ children, ...props }) => (
+  <Element {...props.box} className={['osjs-gui-iframe', props.class]}>
+    <iframe frameborder="0" {...filteredProps(props, ['box'])} />
+    {children}
+  </Element>
+);

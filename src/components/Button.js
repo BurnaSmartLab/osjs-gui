@@ -28,9 +28,8 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import {Icon} from './Icon';
-import {createField} from '../element';
+import { Icon } from './Icon';
+import { createField } from '../element';
 
 /**
  * A button
@@ -38,22 +37,16 @@ import {createField} from '../element';
  * @param {string} [props.icon] Icon source
  * @param {string} [props.label] Use this as label instead of children
  * @param {BoxProperties} [props.box] Box Properties
- * @param {h[]} children Children
  */
-export const Button = (props = {}, children = []) =>
-  createField('button', props, {
-  }, (fieldProps) => {
-    const inner = [];
-    if (props.icon) {
-      inner.push(h(Icon, props.icon));
-    }
-
-    if (typeof props.label === 'string') {
-      inner.push(h('span', {class: 'osjs-label'}, props.label));
-    }
-
-    return h('button', fieldProps, [
-      ...inner,
-      ...children
-    ]);
+export const Button = ({ children, ...props }) =>
+  createField('button', props, {}, fieldProps => {
+    return (
+      <button {...fieldProps}>
+        {props.icon ? <Icon {...props.icon} /> : null}
+        {typeof props.label === 'string' ? (
+          <span className="osjs-label">{props.label}</span>
+        ) : null}
+        {children}
+      </button>
+    );
   });

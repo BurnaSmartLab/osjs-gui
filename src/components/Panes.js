@@ -28,14 +28,13 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import nestable from 'hyperapp-nestable';
-import {Element} from './Element';
+import React from 'react';
+import { Element } from './Element';
 
-const onmousedown = (ev, actions, orientation) => {
-  const {target, clientX, clientY} = ev;
+const onMouseDown = (ev, setSize, orientation) => {
+  const { target, clientX, clientY } = ev;
   const pane = target.previousSibling;
-  const {offsetWidth, offsetHeight} = pane;
+  const { offsetWidth, offsetHeight } = pane;
   const index = Array.from(target.parentNode.children).indexOf(pane);
   const maxWidth = pane.parentNode.offsetWidth * 0.8;
   const maxHeight = pane.parentNode.offsetHeight * 0.8;
@@ -44,7 +43,7 @@ const onmousedown = (ev, actions, orientation) => {
     return;
   }
 
-  const mousemove = ev => {
+  const mouseMove = ev => {
     ev.preventDefault();
 
     let size = orientation === 'vertical' ? offsetWidth : offsetHeight;
@@ -57,73 +56,63 @@ const onmousedown = (ev, actions, orientation) => {
       size = Math.min(maxHeight, size + diffY);
     }
 
-    actions.setSize({index, size});
+    setSize({ index, size });
   };
 
-  const mouseup = ev => {
+  const mouseUp = ev => {
     ev.preventDefault();
-    document.removeEventListener('mousemove', mousemove);
-    document.removeEventListener('mouseup', mouseup);
+    document.removeEventListener('mousemove', mouseMove);
+    document.removeEventListener('mouseup', mouseUp);
   };
 
   ev.preventDefault();
-  document.addEventListener('mousemove', mousemove);
-  document.addEventListener('mouseup', mouseup);
+  document.addEventListener('mousemove', mouseMove);
+  document.addEventListener('mouseup', mouseUp);
 };
 
-const panes = (state, actions, children, orientation) => {
-  const spacers = Array(Math.ceil(children.length / 2))
-    .fill(null)
-    .map(() => h('div', {
-      class: 'osjs-gui-panes-spacer',
-      onmousedown: ev => onmousedown(ev, actions, orientation)
-    }));
+const panes = (sizes, setSize, children, orientation) => {
+  const spacersCount = Math.ceil(children.length / 2);
 
-  const child = (c, i) => {
-    const w = state.sizes[i] ? String(state.sizes[i]) + 'px' : undefined;
+  const spacer = (
+    <div
+      className="osjs-gui-panes-spacer"
+      onMouseDown={ev => onMouseDown(ev, setSize, orientation)}
+    />
+  );
 
-    return h('div', {
-      class: 'osjs-gui-panes-pane',
-      style: {
-        flex: w ? `0 0 ${w}` : w
-      }
-    }, c);
-  };
-
-  return children
-    .map(child)
-    .map((v, i) => [v, spacers[i]])
-    .reduce((a, b) => a.concat(b))
-    .filter(v => typeof v !== 'undefined');
+  return React.Children.map(children, (child, i) => (
+    <>
+      <div
+        className="osjs-gui-panes-pane"
+        style={{
+          flex: sizes[i] ? `0 0 ${sizes[i]}px` : undefined,
+        }}>
+        {child}
+      </div>
+      {i <= spacersCount ? spacer : null}
+    </>
+  ));
 };
-
-const view = (state, actions) => (props, children) => {
-  const orientation = props.orientation || 'vertical';
-
-  return h(Element, {
-    orientation,
-    class: 'osjs-gui-panes-inner'
-  }, panes(state, actions, children, orientation));
-};
-
-const inner = nestable({
-  sizes: []
-}, {
-  init: props => ({sizes: props.sizes || [150]}),
-  setSize: ({index, size}) => state => {
-    const sizes = [].concat(state.sizes);
-    sizes[index] = size;
-    return {sizes};
-  }
-}, view, 'div');
 
 /**
  * Resizable panes
  * @param {Object} props Properties
  * @param {string} [props.orientation='vertical'] Pane orientation
  * @param {number[]} [props.sizes] Pane sizes
- * @param {h[]} children Children
  */
-export const Panes = (props, children) => h(inner, {
-  class: 'osjs-gui-panes'
-}, children);
+export const Panes = ({ children, ...props }) => {
+  const [sizes, setSizes] = React.useState(props.sizes || [150]);
+
+  const setSize = ({ index, size }) =>
+    setSizes(sizes.map((s, i) => (index === i ? size : s)));
+
+  const orientation = props.orientation || 'vertical';
+
+  return (
+    <div className="osjs-gui-panes">
+      <Element orientation={orientation} className="osjs-gui-panes-inner">
+        {panes(sizes, setSize, children, orientation)}
+      </Element>
+    </div>
+  );
+};

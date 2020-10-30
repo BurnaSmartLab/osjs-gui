@@ -28,42 +28,45 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import {Element} from './Element';
+import { Element } from './Element';
 
 /**
  * A menubar item
  * @param {Object} props Properties
- * @param {h[]} children Children
  */
-export const MenubarItem = (props, children = []) => {
-  const {onclick, data} = props;
+export const MenubarItem = ({ children, ...props }) => {
+  const { onClick, data } = props;
 
-  return h('div', {
-    onclick: (ev) => {
-      if (typeof onclick === 'function') {
-        const parentNode = ev.target.parentNode;
-        const index = Array.prototype.indexOf.call(parentNode.children, ev.target);
+  return (
+    <div
+      onClick={ev => {
+        if (typeof onClick === 'function') {
+          const parentNode = ev.target.parentNode;
+          const index = Array.prototype.indexOf.call(
+            parentNode.children,
+            ev.target
+          );
 
-        onclick(ev, data || {}, index);
-      }
-    }
-  }, h('span', {}, children));
+          onClick(ev, data || {}, index);
+        }
+      }}>
+      <span>{children}</span>
+    </div>
+  );
 };
 
 /**
  * A menubar container
  * @param {BoxProperties} [props] Box Properties
  * @param {MenubarItem[]} [props.items] Array of object
- * @param {h[]} children Children
  */
-export const Menubar = (props, children = []) =>
-  h(Element, Object.assign({}, props, {
-    class: ['osjs-gui-menubar', props.class]
-  }), [
-    ...(props.items || []).map(item => h(MenubarItem, {
-      data: item.data,
-      onclick: (item.onclick || props.onclick)
-    }, item.label)),
-    ...children
-  ]);
+export const Menubar = ({ children, ...props }) => (
+  <Element {...props} class={['osjs-gui-menubar', props.className]}>
+    {(props.items || []).map(item => (
+      <MenubarItem onClick={item.onClick || props.onClick} data={item.data}>
+        {item.label}
+      </MenubarItem>
+    ))}
+    {children}
+  </Element>
+);

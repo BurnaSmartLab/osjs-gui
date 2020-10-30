@@ -28,9 +28,7 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-
-const sources = list => list.map(item => h('source', item));
+const sources = list => list.map(item => <source {...item} />);
 
 const isTrue = v => typeof v === 'undefined' || v === true;
 
@@ -44,30 +42,28 @@ const isTrue = v => typeof v === 'undefined' || v === true;
  * @param {number} [props.height] Video height
  * @param {String} [props.poster] Poster image source
  * @param {Boolean} [props.loop] Loop video
- * @param {Boolean} [props.autoplay] Autoplay video
+ * @param {Boolean} [props.autoPlay] Autoplay video
  * @param {Boolean} [props.controls] Show controls
- * @param {Function} [props.onloadeddata] On loaded data event
+ * @param {Function} [props.onLoadedData] On loaded data event
  */
-export const Video = (props, children) =>
-  h('div', {
-    class: 'osjs-gui osjs-gui-video',
-    style: {
-      width: props.width ? String(props.width) + 'px' : undefined,
-      height: props.height ? String(props.height) + 'px' : undefined
-    }
-  }, [
-    h('video', {
-      src: props.src,
-      width: props.width,
-      height: props.height,
-      poster: props.poster,
-      loop: props.loop ? 'loop' : undefined,
-      muted: props.muted ? 'muted' : undefined,
-      controls: isTrue(props.controls) ? 'controls' : undefined,
-      autoplay: isTrue(props.autoplay) ? 'autoplay' : undefined,
-      onloadeddata: props.onload,
-      oncreate: props.oncreate,
-      onupdate: props.onupdate,
-      ondestroy: props.ondestroy
-    }, sources(props.sources || []))
-  ]);
+export const Video = ({ children, ...props }) => (
+  <div
+    className="osjs-gui osjs-gui-video"
+    style={{
+      width: props.width ? props.width + 'px' : undefined,
+      height: props.height ? props.height + 'px' : undefined,
+    }}>
+    <video
+      src={props.src}
+      width={props.width}
+      height={props.height}
+      poster={props.poster}
+      loop={props.loop ? 'loop' : undefined}
+      muted={props.muted ? 'muted' : undefined}
+      controls={isTrue(props.controls) ? 'controls' : undefined}
+      autoPlay={isTrue(props.autoplay) ? 'autoplay' : undefined}
+      onLoadedData={props.onload}>
+      {sources(props.sources)}
+    </video>
+  </div>
+);
