@@ -28,26 +28,35 @@
  * @licence Simplified BSD License
  */
 
-import {Element} from './Element';
+import React from 'react';
+import { Element } from './Element';
 
 /**
  * A label element
  * @param {Object} props Properties
  * @param {string} [props.text] Label Text
  * @param {string} [props.placement] Placement
- * @param {string} [props.for] The "for" attribute
+ * @param {string} [props.htmlFor] The "for" attribute
  * @param {BoxProperties} [props.box] Box Properties
  */
-export const Label = (props = {}, children = []) => {
+export const Label = ({ children, ...props }) => {
   const placement = props.placement || 'top';
   const text = props.text || '';
 
-  const elementProps = Object.assign({
-    class: ['osjs-gui-field-label', 'osjs-gui-field-label-on-' + placement]
-  }, props.box || {});
+  const elementProps = Object.assign(
+    {
+      className: [
+        'osjs-gui-field-label',
+        'osjs-gui-field-label-on-' + placement,
+      ],
+    },
+    props.box || {}
+  );
 
-  return h(Element, elementProps, [
-    h('label', {for: props.for}, text),
-    children
-  ]);
+  return (
+    <Element {...elementProps}>
+      <label htmlFor={props.htmlFor}>{text}</label>
+      {children}
+    </Element>
+  );
 };

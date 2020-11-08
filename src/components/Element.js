@@ -30,7 +30,7 @@
 
 /**
  * Elemet Box definition
- * @property {string} [className] Container class name
+ * @property {string} [className] Container className
  * @property {number} [grow] Flexbox grow value
  * @property {number} [shrink] Flexbox shrink value
  * @property {number|string} [basis] Flexbox basis value

@@ -37,7 +37,7 @@ import { Element } from './Element';
  * @param {BoxProperties} [props.box] Box Properties
  */
 export const Iframe = ({ children, ...props }) => (
-  <Element {...props.box} className={['osjs-gui-iframe', props.class]}>
+  <Element {...props.box} className={['osjs-gui-iframe', props.className]}>
     <iframe frameborder="0" {...filteredProps(props, ['box'])} />
     {children}
   </Element>

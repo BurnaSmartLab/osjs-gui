@@ -35,5 +35,5 @@ import { Element } from './Element';
  * @param {BoxProperties} props Properties
  */
 export const BoxStyled = props => (
-  <Element {...props} className={['osjs-gui-box-styled', props.class]} />
+  <Element {...props} className={['osjs-gui-box-styled', props.className]} />
 );

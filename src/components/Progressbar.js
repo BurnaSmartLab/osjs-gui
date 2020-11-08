@@ -57,7 +57,7 @@ export const Progressbar = ({ children, ...props }) => {
   );
 
   return (
-    <Element className={['osjs-gui-progressbar', props.class]}>
+    <Element className={['osjs-gui-progressbar', props.className]}>
       {c}
       {children}
     </Element>

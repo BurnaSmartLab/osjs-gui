@@ -36,7 +36,7 @@ import { Element } from './Element';
  * @param {BoxProperties} [props.box] Box Properties
  */
 export const Statusbar = ({ children, ...props }) => (
-  <Element {...props.box} className={['osjs-gui-statusbar', props.class]}>
+  <Element {...props.box} className={['osjs-gui-statusbar', props.className]}>
     {children}
   </Element>
 );

@@ -40,7 +40,7 @@ export const Toolbar = ({ children, ...props }) => (
   <Element
     orientation="vertical"
     {...props}
-    className={['osjs-gui-toolbar', props.class]}>
+    className={['osjs-gui-toolbar', props.className]}>
     {children}
   </Element>
 );

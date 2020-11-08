@@ -35,7 +35,7 @@ const isTrue = v => typeof v === 'undefined' || v === true;
 /**
  * A video
  * @param {Object} props Properties
- * @param {String} [props.class] Append this className
+ * @param {String} [props.className] Append this className
  * @param {Object} [props.style] CSS Style object
  * @param {String} props.src The video source
  * @param {number} [props.width] Video width

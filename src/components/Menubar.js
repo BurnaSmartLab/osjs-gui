@@ -61,7 +61,7 @@ export const MenubarItem = ({ children, ...props }) => {
  * @param {MenubarItem[]} [props.items] Array of object
  */
 export const Menubar = ({ children, ...props }) => (
-  <Element {...props} class={['osjs-gui-menubar', props.className]}>
+  <Element {...props} className={['osjs-gui-menubar', props.className]}>
     {(props.items || []).map(item => (
       <MenubarItem onClick={item.onClick || props.onClick} data={item.data}>
         {item.label}

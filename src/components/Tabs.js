@@ -64,7 +64,7 @@ export const Tabs = ({ children, ...props }) => {
   );
 
   return (
-    <div className={'osjs-gui osjs-gui-tabs ' + (props.class || '')}>
+    <div className={'osjs-gui osjs-gui-tabs ' + (props.className || '')}>
       <div className="osjs-gui-tabs-wrapper">
         <div className="osjs-gui-tabs-header">
           {/* {headers(props, state, actions)} */}
