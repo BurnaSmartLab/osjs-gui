@@ -39,9 +39,9 @@ import {createField} from '../element';
  */
 export const TextField = ({children, ...props}) =>
   createField('text-field', props, {
-    autocomplete: 'off',
-    autocorrect: 'off',
-    autocapitalize: 'off',
-    spellcheck: 'false',
+    autoComplete: 'off',
+    autoCorrect: 'off',
+    autoCapitalize: 'off',
+    spellCheck: 'false',
     type: 'text'
   }, (fieldProps) => <input {...fieldProps} />);
