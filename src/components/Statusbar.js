@@ -28,16 +28,15 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import {Element} from './Element';
+import { Element } from './Element';
 
 /**
  * A status bar
  * @param {Object} props Properties
  * @param {BoxProperties} [props.box] Box Properties
- * @param {h[]} children Children
  */
-export const Statusbar = (props, children) =>
-  h(Element, Object.assign({}, props.box || {}, {
-    class: ['osjs-gui-statusbar', props.class]
-  }), children);
+export const Statusbar = ({ children, ...props }) => (
+  <Element {...props.box} className={['osjs-gui-statusbar', props.className]}>
+    {children}
+  </Element>
+);

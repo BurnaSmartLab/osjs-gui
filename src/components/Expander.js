@@ -28,61 +28,44 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import {Element} from './Element';
-import nestable from 'hyperapp-nestable';
-
-const view = (state, actions) => (props, children) => {
-  return h(Element, Object.assign({}, props.box || {}, {
-    class: ['osjs-gui-expander-wrapper']
-  }), [
-    h('div', {
-      class: 'osjs-gui-expander-header',
-      onclick: ev => actions.ontoggle({
-        ev,
-        active: !state.active,
-        ontoggle: props.ontoggle
-      })
-    }, [
-      h('div', {
-        class: 'osjs-gui-expander-header-icon',
-        'data-active': String(state.active)
-      }),
-      h('div', {
-        class: 'osjs-gui-expander-header-label'
-      }, props.label)
-    ]),
-    h('div', {
-      class: 'osjs-gui-expander-content',
-      style: {
-        display: state.active === false ? 'none' : undefined
-      }
-    }, children)
-  ]);
-};
-
-const inner = nestable({
-  active: true
-}, {
-  init: props => ({
-    ative: props.active !== false
-  }),
-  ontoggle: ({ev, active, ontoggle}) => {
-    const cb = ontoggle || function() {};
-    cb(ev, active);
-    return {active};
-  }
-}, view, 'div');
+import React from 'react';
+import { Element } from './Element';
 
 /**
  * A status bar
  * @param {Object} props Properties
  * @param {boolean} [props.active] Active state
- * @param {Function} [props.ontoggle] Toggle callback => (ev, active)
+ * @param {Function} [props.onToggle] Toggle callback => (ev, active)
  * @param {BoxProperties} [props.box] Box Properties
- * @param {h[]} children Children
  */
-export const Expander = (props, children) =>
-  h(inner, Object.assign({}, props, {
-    class: 'osjs-gui osjs-gui-expander'
-  }), children);
+export const Expander = ({ children, ...props }) => {
+  const [active, setActive] = React.useState(Boolean(props.active));
+
+  const onToggle = ev => {
+    if (props.onToggle) {
+      props.onToggle(ev, !active);
+    }
+
+    setActive(!active);
+  };
+
+  return (
+    <div className="osjs-gui osjs-gui-expander">
+      <Element {...props.box} className={['osjs-gui-expander-wrapper']}>
+        <div className="osjs-gui-expander-header" onClick={onToggle}>
+          <div
+            className="osjs-gui-expander-header-icon"
+            data-active={String(state.active)}></div>
+          <div className="osjs-gui-expander-header-label">{props.label}</div>
+        </div>
+        <div
+          className="osjs-gui-expander-content"
+          style={{
+            display: state.active === false ? 'none' : undefined,
+          }}>
+          {children}
+        </div>
+      </Element>
+    </div>
+  );
+};

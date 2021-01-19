@@ -28,15 +28,12 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import {Element} from './Element';
+import { Element } from './Element';
 
 /**
  * A styled flexbox container
  * @param {BoxProperties} props Properties
- * @param {h[]} children Children
  */
-export const BoxStyled = (props, children) =>
-  h(Element, Object.assign({}, props, {
-    class: ['osjs-gui-box-styled', props.class]
-  }), children);
+export const BoxStyled = props => (
+  <Element {...props} className={['osjs-gui-box-styled', props.className]} />
+);

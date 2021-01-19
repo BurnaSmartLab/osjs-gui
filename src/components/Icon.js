@@ -28,29 +28,24 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-
 /**
  * An icon
  * @param {Object} props Properties
  * @param {string} props.src Icon src
  * @param {string} [props.name] Icon name
- * @param {h[]} children Children
  */
-export const Icon = (props, children) => {
-  const i = props && typeof props === 'object'
-    ? props.src
-    : props;
+export const Icon = props => {
+  const i = props && typeof props === 'object' ? props.src : props;
 
-  const n = props && typeof props === 'object'
-    ? props.name
-    : undefined;
+  const n = props && typeof props === 'object' ? props.name : undefined;
 
-  return h('i', {
-    'data-icon': n,
-    class: 'osjs-icon',
-    style: {
-      backgroundImage: typeof props === 'string' ? `url(${i})` : undefined
-    }
-  });
+  return (
+    <i
+      data-icon={n}
+      className="osjs-icon"
+      style={{
+        backgroundImage: typeof props === 'string' ? `url(${i})` : undefined,
+      }}
+    />
+  );
 };

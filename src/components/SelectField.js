@@ -28,38 +28,48 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import {createField} from '../element';
+import { createField } from '../element';
 
 /**
  * A text field
  * @param {Object} props Properties
  * @param {string} [props.value] Value
  * @param {BoxProperties} [props.box] Box Properties
- * @param {h[]} children Children
  */
-export const SelectField = (props = {}, children = []) => {
+export const SelectField = ({ children, ...props }) => {
+  const getChoices = choices =>
+    choices instanceof Array
+      ? choices.map(value =>
+          typeof value === 'object' ? value : { value, label: value }
+        )
+      : Object.keys(props.choices || {}).map(value => ({
+          value,
+          label: props.choices[value],
+        }));
 
-  const getChoices = choices => choices instanceof Array
-    ? choices.map(value => typeof value === 'object' ? value : {value, label: value})
-    : Object.keys(props.choices || {})
-      .map(value => ({value, label: props.choices[value]}));
-
-  const choices = getChoices(props.choices)
-    .map(({value, label}) => {
-      return h('option', {
-        value,
-        selected: props.value === value
-      }, label);
-    });
+  const choices = getChoices(props.choices).map(({ value, label }) => (
+    <option value={value} selected={props.value === value}>
+      {label}
+    </option>
+  ));
 
   const getValue = ev => [ev.target.value, ev.target.textContent];
-  const createSelect = fieldProps => h('div', {}, h('select', fieldProps, [
-    ...choices,
-    ...children
-  ]));
+  const createSelect = fieldProps => (
+    <div>
+      <select {...fieldProps}>
+        {choices}
+        {children}
+      </select>
+    </div>
+  );
 
-  return createField('select-field', props, {
-    selectedIndex: undefined
-  }, createSelect, getValue);
+  return createField(
+    'select-field',
+    props,
+    {
+      selectedIndex: undefined,
+    },
+    createSelect,
+    getValue
+  );
 };

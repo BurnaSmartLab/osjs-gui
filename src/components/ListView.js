@@ -28,108 +28,106 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import {filteredProps, doubleTap} from '../utils';
-import {Element} from './Element';
-import {Icon} from './Icon';
+import React from 'react';
+import { doubleTap } from '../utils';
+import { Element } from './Element';
+import { Icon } from './Icon';
 
 const tapper = doubleTap();
 
-const createView = props => {
+const ListViewCol = ({ row, rowIndex, paneIndex, ...props }) => {
+  const elementRef = React.useRef();
 
-  const cols = (paneIndex) => (row, rowIndex) => {
-    const col = row.columns[paneIndex] || {};
-    const selected = props.selectedIndex === rowIndex;
-    const colIcon = col.icon ? h(Icon, col.icon) : null;
-    const children = [h('span', {}, [typeof col === 'object' ? col.label : col])];
+  React.useEffect(() => {
+    props.onCreate({ data: row.data, index: rowIndex, el: elementRef.current });
+  }, []);
 
-    if (colIcon) {
-      children.unshift(colIcon);
-    }
+  const col = row.columns[paneIndex] || {};
+  const selected = props.selectedIndex === rowIndex;
+  const colIcon = col.icon ? <Icon {...col.icon} /> : null;
 
-    return h('div', {
-      key: row.key,
-      'data-has-icon': col.icon ? true : undefined,
-      class: 'osjs-gui-list-view-cell' + (selected ? ' osjs__active' : ''),
-      ontouchstart: (ev) => tapper(ev, () => props.onactivate({data: row.data, index: rowIndex, ev})),
-      ondblclick: (ev) => props.onactivate({data: row.data, index: rowIndex, ev}),
-      onclick: (ev) => props.onselect({data: row.data, index: rowIndex, ev}),
-      oncontextmenu: (ev) => props.oncontextmenu({data: row.data, index: rowIndex, ev}),
-      oncreate: (el) => props.oncreate({data: row.data, index: rowIndex, el})
-    }, children);
-  };
-
-  const pane = (index, col) => h('div', {
-    class: 'osjs-gui-list-view-pane',
-    style: col.style || {}
-  }, [
-    h('div', {
-      class: 'osjs-gui-list-view-header',
-      style: {
-        display: props.hideColumns ? 'none' : undefined
+  return (
+    <div
+      ref={elementRef}
+      key={row.key}
+      data-has-icon={col.icon ? true : undefined}
+      className={'osjs-gui-list-view-cell' + (selected ? ' osjs__active' : '')}
+      onTouchStart={ev =>
+        tapper(ev, () =>
+          props.onActivate({ data: row.data, index: rowIndex, ev })
+        )
       }
-    }, h('span', {}, typeof col === 'object' ? col.label : col)),
-    h('div', {
-      class: 'rows',
-      'data-zebra': String(props.zebra)
-    }, props.rows.map(cols(index)))
-  ]);
-
-  return h('div', {
-    class: 'osjs-gui-list-view-wrapper',
-    oncreate: el => (el.scrollTop = props.scrollTop),
-    onupdate: el => {
-      if (props.selectedIndex < 0) {
-        el.scrollTop = props.scrollTop;
+      onDoubleClick={ev =>
+        props.onActivate({ data: row.data, index: rowIndex, ev })
       }
-    }
-  }, props.columns.map((c, i) => pane(i, c)));
+      onClick={ev => props.onSelect({ data: row.data, index: rowIndex, ev })}
+      onContextMenu={ev =>
+        props.onContextMenu({ data: row.data, index: rowIndex, ev })
+      }>
+      {colIcon ? colIcon : null}
+      <span>{typeof col === 'object' ? col.label : col}</span>
+    </div>
+  );
 };
 
-export const ListView = props => h(Element, Object.assign({
-  class: 'osjs-gui-list-view'
-}, props.box || {}), createView(filteredProps(props, ['box'])));
+const ListViewPane = ({ column, index, ...props }) => (
+  <div className="osjs-gui-list-view-pane" style={col.style}>
+    <div
+      className="osjs-gui-list-view-header"
+      style={{
+        display: props.hideColumns ? 'none' : undefined,
+      }}>
+      <span>{typeof column === 'object' ? column.label : column}</span>
+    </div>
+    <div className="rows" data-zebra={props.zebra}>
+      {props.rows.map((row, rowIndex) => (
+        <ListViewCol
+          row={row}
+          rowIndex={rowIndex}
+          paneIndex={index}
+          {...props}
+        />
+      ))}
+    </div>
+  </div>
+);
 
-export const listView = ({
-  component: (state, actions) => {
-    const newProps = Object.assign({
-      zebra: true,
-      columns: [],
-      rows: [],
-      onselect: ({data, index, ev}) => {
-        actions.select({data, index, ev});
-        actions.setSelectedIndex(index);
-      },
-      onactivate: ({data, index, ev}) => {
-        actions.activate({data, index, ev});
-        actions.setSelectedIndex(-1);
-      },
-      oncontextmenu: ({data, index, ev}) => {
-        actions.select({data, index, ev});
-        actions.contextmenu({data, index, ev});
-        actions.setSelectedIndex(index);
-      },
-      oncreate: (args) => {
-        actions.created(args);
-      }
-    }, state);
+const defaultHandler = () => {};
 
-    return (props = {}) => ListView(Object.assign(newProps, props));
-  },
+const defaultProps = {
+  selectedIndex: -1,
+  scrollTop: 0,
+  zebra: true,
+  columns: [],
+  rows: [],
+  onSelect: defaultHandler,
+  onActivate: defaultHandler,
+  onContextMenu: defaultHandler,
+  onCreate: defaultHandler,
+};
 
-  state: state => Object.assign({
-    selectedIndex: -1,
-    scrollTop: 0
-  }, state),
+export const ListView = props => {
+  const elementRef = React.useRef();
 
-  actions: actions => Object.assign({
-    select: () => () => ({}),
-    activate: () => () => ({}),
-    contextmenu: () => () => ({}),
-    created: () => () => ({}),
-    setRows: rows => ({rows}),
-    setColumns: columns => ({columns}),
-    setScrollTop: scrollTop => state => ({scrollTop}),
-    setSelectedIndex: selectedIndex => state => ({selectedIndex})
-  }, actions || {})
-});
+  const newProps = { ...defaultProps, ...props };
+
+  React.useEffect(() => {
+    elementRef.current.scrollTop = newProps.scrollTop;
+  }, []);
+
+  React.useEffect(() => {
+    if (newProps.selectedIndex < 0) {
+      elementRef.current.scrollTop = newProps.scrollTop;
+    }
+  });
+
+  return (
+    <Element className="osjs-gui-list-view" {...newProps.box}>
+      <div ref={elementRef} className="osjs-gui-list-view-wrapper">
+        {newProps.columns.map((c, i) => (
+          <ListViewPane column={c} index={i} {...newProps} />
+        ))}
+      </div>
+    </Element>
+  );
+};

@@ -28,41 +28,38 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import {Element} from './Element';
+import { Element } from './Element';
 
 /**
  * A progress bar
  * @param {Object} props Properties
  * @param {number} [props.value] The value (percentage)
  * @param {BoxProperties} [props.box] Box Properties
- * @param {h[]} children Children
  */
-export const Progressbar = (props, children = []) => {
-  let value = typeof props.value === 'number'
-    ? Math.max(0, Math.abs(props.value)) % 100
-    : 0;
+export const Progressbar = ({ children, ...props }) => {
+  let value =
+    typeof props.value === 'number'
+      ? Math.max(0, Math.abs(props.value)) % 100
+      : 0;
 
-  const c = h('div', {class: 'osjs-gui-progressbar-wrapper'}, [
-    h('div', {
-      className: 'osjs-gui-progressbar-value',
-      style: {
-        width: String(value) + '%'
-      }
-    }),
-    h('div', {
-      className: 'osjs-gui-progressbar-label',
-    }, [
-      h('span', {}, [
-        String(value) + '%'
-      ])
-    ])
-  ]);
+  const c = (
+    <div className="osjs-gui-progressbar-wrapper">
+      <div
+        className="osjs-gui-progressbar-value"
+        style={{
+          width: value + '%',
+        }}
+      />
+      <div className="osjs-gui-progressbar-label">
+        <span>{value}%</span>
+      </div>
+    </div>
+  );
 
-  return h(Element, Object.assign({}, props.box || {}, {
-    class: ['osjs-gui-progressbar', props.class]
-  }), [
-    c,
-    ...children
-  ]);
+  return (
+    <Element className={['osjs-gui-progressbar', props.className]}>
+      {c}
+      {children}
+    </Element>
+  );
 };

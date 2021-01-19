@@ -28,19 +28,19 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-import {Element} from './Element';
+import { Element } from './Element';
 
 /**
  * A toolbar
  * @desc Contains entries with spacing
  * @param {BoxProperties} props Properties
  * @param {string} [props.orientation='vertical'] Box orientation
- * @param {h[]} children Children
  */
-export const Toolbar = (props, children) =>
-  h(Element, Object.assign({
-    orientation: 'vertical'
-  }, props, {
-    class: ['osjs-gui-toolbar', props.class]
-  }), children);
+export const Toolbar = ({ children, ...props }) => (
+  <Element
+    orientation="vertical"
+    {...props}
+    className={['osjs-gui-toolbar', props.className]}>
+    {children}
+  </Element>
+);

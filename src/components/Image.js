@@ -28,8 +28,6 @@
  * @licence Simplified BSD License
  */
 
-import {h} from 'hyperapp';
-
 /**
  * A image
  * @param {Object} props Properties
@@ -37,16 +35,15 @@ import {h} from 'hyperapp';
  * @param {String} [props.alt] The image alternate text
  * @param {number} [props.width] Image width
  * @param {number} [props.height] Image height
- * @param {Function} [props.onload] On loaded data event
- * @param {Function} [props.oncreate] Hyperapp oncreate function
- * @param {Function} [props.onupdate] Hyperapp onupdate function
- * @param {Function} [props.ondestroy] Hyperapp ondestroy function
+ * @param {Function} [props.onLoad] On loaded data event
  */
-export const Image = (props, children) =>
-  h('div', {
-    class: 'osjs-gui osjs-gui-image',
-    style: {
-      width: props.width ? String(props.width) + 'px' : undefined,
-      height: props.height ? String(props.height) + 'px' : undefined
-    }
-  }, h('img', props));
+export const Image = props => (
+  <div
+    className="osjs-gui osjs-gui-image"
+    style={{
+      width: props.width ? props.width + 'px' : undefined,
+      height: props.height ? props.height + 'px' : undefined,
+    }}>
+    <img {...props} />
+  </div>
+);
